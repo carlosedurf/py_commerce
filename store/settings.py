@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'product',
 
     # TODO: Remover debug toolbar
     'debug_toolbar',
@@ -130,7 +131,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [
-    os.path.join('template/static')
+    os.path.join('templates/static')
 ]
 
 MEDIA_URL = '/media/'
