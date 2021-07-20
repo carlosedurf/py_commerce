@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'product',
     'order',
+    'shape',
 
     # TODO: Remover debug toolbar
     'debug_toolbar',

@@ -5,11 +5,16 @@ from django.db.models.fields import CharField, FloatField, PositiveIntegerField
 
 
 class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    total = FloatField()
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='Usuário'
+    )
+    total = FloatField(verbose_name='Total')
     status = CharField(
         default='C',
         max_length=1,
+        verbose_name='Situação',
         choices=(
             ('A', 'Aprovado'),
             ('C', 'Criado'),
@@ -23,17 +28,25 @@ class Order(models.Model):
     def __str__(self):
         return f'Pedido N. {self.pk}'
 
+    class Meta:
+        verbose_name = 'Pedido'
+        verbose_name_plural = 'Pedidos'
+
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    product = models.CharField(max_length=255)
-    product_id = models.PositiveIntegerField()
-    variation = models.CharField(max_length=255)
-    variation_id = models.PositiveIntegerField()
-    price = FloatField()
-    promotional_price = FloatField(default=0)
-    quantity = PositiveIntegerField()
-    image = CharField(max_length=2000)
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE,
+        verbose_name='Pedido'
+    )
+    product = models.CharField(max_length=255, verbose_name='Produto')
+    product_id = models.PositiveIntegerField(verbose_name='ID do Produto')
+    variation = models.CharField(max_length=255, verbose_name='Variação')
+    variation_id = models.PositiveIntegerField(verbose_name='ID da Variação')
+    price = FloatField(verbose_name='Preço')
+    promotional_price = FloatField(default=0, verbose_name='Preço Promocional')
+    quantity = PositiveIntegerField(verbose_name='Quantidade')
+    image = CharField(max_length=2000, verbose_name='Imagem')
 
     def __str__(self):
         return f'Item do {self.order}'

@@ -6,20 +6,28 @@ import os
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=255)
-    short_description = models.TextField(max_length=255)
-    long_description = models.TextField()
+    name = models.CharField(max_length=255, verbose_name='Nome')
+    short_description = models.TextField(
+        max_length=255,
+        verbose_name='Descrição Curta'
+    )
+    long_description = models.TextField(verbose_name='Descrição Longa')
     image = models.ImageField(
         upload_to='product_image/%Y/%m/',
         blank=True,
-        null=True
+        null=True,
+        verbose_name='Imagem'
     )
-    slug = models.CharField(unique=True, max_length=255)
-    marketing_price = models.FloatField()
-    promotional_marketing_price = models.FloatField(default=0)
+    slug = models.CharField(unique=True, max_length=255, verbose_name='Sigla')
+    marketing_price = models.FloatField(verbose_name='Preço de Marketing')
+    promotional_marketing_price = models.FloatField(
+        default=0,
+        verbose_name='Preço de Marketing Promocional'
+    )
     type = models.CharField(
         default='V',
         max_length=1,
+        verbose_name='Tipo',
         choices=(
             ('V', 'Variação'),
             ('S', 'Simples'),
@@ -56,13 +64,29 @@ class Product(models.Model):
     def __str__(self) -> str:
         return self.name
 
+    class Meta:
+        verbose_name = 'Produto'
+        verbose_name_plural = 'Produtos'
+
 
 class Variation(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    name = models.CharField(max_length=50, blank=True, null=True)
-    price = models.FloatField()
-    promotion_price = models.FloatField(default=0)
-    stock = models.PositiveIntegerField(default=1)
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        verbose_name='Produto'
+    )
+    name = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        verbose_name='Nome'
+    )
+    price = models.FloatField(verbose_name='Preço')
+    promotion_price = models.FloatField(
+        default=0,
+        verbose_name='Preço Promocional'
+    )
+    stock = models.PositiveIntegerField(default=1, verbose_name='Estoque')
 
     def __str__(self):
         return self.name or self.product.name
