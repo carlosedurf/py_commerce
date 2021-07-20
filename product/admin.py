@@ -13,5 +13,5 @@ class ProductAdmin(admin.ModelAdmin):
     ]
 
 
-admin.register(models.Product, ProductAdmin)
-admin.register(models.Variation)
+admin.site.register(models.Product, ProductAdmin)
+admin.site.register(models.Variation)
