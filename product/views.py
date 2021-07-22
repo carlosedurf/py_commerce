@@ -149,6 +149,6 @@ class Car(View):
         return render(self.request, 'product/car.html', context)
 
 
-class Finally(View):
+class ResumeShop(View):
     def get(self, *args, **kwargs):
         return HttpResponse('Finalizando')
