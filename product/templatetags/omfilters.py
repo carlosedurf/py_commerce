@@ -7,3 +7,7 @@ register = Library()
 @register.filter
 def price_formated(val):
     return utils.price_formated(val)
+
+@register.filter
+def cart_total_qtd(val):
+    return utils.cart_total_qtd(val)

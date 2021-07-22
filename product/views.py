@@ -103,7 +103,7 @@ class AddCar(View):
 
         self.request.session.save()
         messages.success(
-            self.request, 
+            self.request,
             f'Produto {product_name} {variation_name} adcionado ao seu '
             f'carrinho {car[variation_id]["quantity"]}x'
         )
@@ -112,12 +112,41 @@ class AddCar(View):
 
 class RemoveCar(View):
     def get(self, *args, **kwargs):
-        return HttpResponse('Removendo do carrinho')
+        http_referer = self.request.META.get(
+            'HTTP_REFERER',
+            reverse('product:list')
+        )
+        variation_id = self.request.GET.get('vid')
+
+        if not variation_id:
+            return redirect(http_referer)
+
+        if not self.request.session.get('car'):
+            return redirect(http_referer)
+
+        if variation_id not in self.request.session['car']:
+            return redirect(http_referer)
+
+        car = self.request.session['car'][variation_id]
+
+        messages.success(
+            self.request,
+            f'Produto {car["product_name"]} {car["variation_name"]} '
+            f'removido do seu carinho.'
+        )
+
+        del self.request.session['car'][variation_id]
+        self.request.session.save()
+        return redirect(http_referer)
 
 
 class Car(View):
     def get(self, *args, **kwargs):
-        return render(self.request, 'product/car.html')
+        context = {
+            'car': self.request.session.get('car', {})
+        }
+        pprint(context)
+        return render(self.request, 'product/car.html', context)
 
 
 class Finally(View):
