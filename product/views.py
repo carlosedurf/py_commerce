@@ -7,6 +7,8 @@ from django.contrib import messages
 from django.urls import reverse
 from .models import Product, Variation
 
+from pprint import pprint
+
 
 class ListProduct(ListView):
     model = Product
@@ -24,6 +26,11 @@ class ProductDetails(DetailView):
 
 class AddCar(View):
     def get(self, *args, **kwargs):
+        # TODO: Remover delete session
+        # if self.request.session.get('car'):
+        #     del self.request.session['car']
+        #     self.request.session.save()
+
         http_referer = self.request.META.get(
             'HTTP_REFERER'
         )
@@ -34,6 +41,26 @@ class AddCar(View):
             return redirect(http_referer)
 
         variation = get_object_or_404(Variation, id=variation_id)
+        variation_stock = variation.stock
+        product = variation.product
+
+        product_id = product.id
+        product_name = product.name
+        variation_name = variation.name or ''
+        unit_price = variation.price
+        unit_promotion_price = variation.promotion_price
+        quantity = 1
+        slug = product.slug
+        image = product.image
+
+        if image:
+            image = image.name
+        else:
+            image = ''
+
+        if variation.stock < 1:
+            messages.error(self.request, 'Estoque insuficiente!')
+            return redirect(http_referer)
 
         if not self.request.session.get('car'):
             self.request.session['car'] = {}
@@ -42,13 +69,45 @@ class AddCar(View):
         car = self.request.session['car']
 
         if variation_id in car:
-            # TODO: Variation exists in car
-            pass
-        else:
-            # TODO: Variation not exists in car
-            pass
+            quantity_car = car[variation_id]['quantity']
+            quantity_car += 1
 
-        return HttpResponse(f'{variation.product} {variation.name}')
+            if variation_stock < quantity_car:
+                messages.warning(
+                    self.request,
+                    f'Estoque insuficiente para {quantity_car}x no '
+                    f'produto "{product_name}". Adicionamos {variation_stock}x '
+                    f'no seu carrinho.'
+                )
+                quantity_car = variation_stock
+
+            car[variation_id]['quantity'] = quantity_car
+            car[variation_id]['quantity_price'] = unit_price * quantity_car
+            car[variation_id]['quantity_promotion_price'] = \
+                unit_promotion_price * quantity_car
+
+        else:
+            car[variation_id] = {
+                'product_id': product_id,
+                'product_name': product_name,
+                'variation_name': variation_name,
+                'variation_id': variation_id,
+                'unit_price': unit_price,
+                'unit_promotion_price': unit_promotion_price,
+                'quantity_price': unit_price,
+                'quantity_promotion_price': unit_promotion_price,
+                'quantity': quantity,
+                'slug': slug,
+                'image': image,
+            }
+
+        self.request.session.save()
+        messages.success(
+            self.request, 
+            f'Produto {product_name} {variation_name} adcionado ao seu '
+            f'carrinho {car[variation_id]["quantity"]}x'
+        )
+        return redirect(http_referer)
 
 
 class RemoveCar(View):
@@ -58,7 +117,7 @@ class RemoveCar(View):
 
 class Car(View):
     def get(self, *args, **kwargs):
-        return HttpResponse('Carrinho')
+        return render(self.request, 'product/car.html')
 
 
 class Finally(View):
