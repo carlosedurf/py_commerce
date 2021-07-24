@@ -5,29 +5,46 @@
 
 {% block 'content' %}
 
-    <div class="row">
-        {% if not request.user.is_authenticated %}
-            <div class="col-lg">
-                <h1>Login</h1>
+<div class="row">
+    {% if not request.user.is_authenticated %}
+    <div class="col-lg mt-3">
+        <h4>Login</h4>
+        <p>Se você já fez cadastro, basta entrar com seu usuário e senha abaixo:</p>
+
+        <form method="POST" action="{% url 'profile:login' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="inputUser">Usuário</label>
+                <input type="text" class="form-control" name="username" id="inputUser" aria-describedby="userHelp" placeholder="Digite seu usuário">
             </div>
-        {% endif %}
-        <div class="col-lg">
+            <div class="form-group">
+                <label for="inputPassword">Senha</label>
+                <input type="password" name="password" class="form-control" id="inputPassword" placeholder="Digite sua senha">
+            </div>
 
-            {% block 'register_title' %}
-                <h1>Cadastro</h1>
-                <form action="" method="post">
-                    {% csrf_token %}
-                    {{ userform|crispy }}
-                    {{ profileform|crispy }}
-
-                    <div class="row">
-                        <div class="col">
-                            <button type="submit" class="btn btn-primary btn-block">Enviar</button>
-                        </div>
-                    </div>
-                </form>
-            {% endblock 'register_title' %}
-        </div>
+            <button type="submit" class="btn btn-primary btn-block btn-lg">Entrar</button>
+        </form>
     </div>
+    {% endif %}
+
+    <div class="col-lg mt-3">
+        {% block 'register_title' %}
+        <h4>Cadastro</h4>
+        <p>Caso ainda não tenha cadastro, utilize o formulário a seguir para se cadastrar:</p>
+        {% endblock 'register_title' %}
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ userform|crispy }}
+            {{ profileform|crispy }}
+
+            <div class="row">
+                <div class="col">
+                    <button type="submit" class="btn btn-primary btn-block btn-lg">Enviar</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
 
 {% endblock 'content' %}
