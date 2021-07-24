@@ -151,4 +151,11 @@ class Car(View):
 
 class ResumeShop(View):
     def get(self, *args, **kwargs):
-        return HttpResponse('Finalizando')
+        if not self.request.user.is_authenticated:
+            return redirect('profile:create')
+
+        context = {
+            'user': self.request.user,
+            'car': self.request.session['car']
+        }
+        return render(self.request, 'product/resumeshop.html', context)

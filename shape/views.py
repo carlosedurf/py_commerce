@@ -60,6 +60,11 @@ class BasePerfil(View):
 class Create(BasePerfil):
     def post(self, *args, **kwargs):
         if not self.userform.is_valid() or not self.profileform.is_valid():
+            messages.error(
+                self.request,
+                'Existem erros no formulário de cadastro. Verifique se todos os '
+                f'os campos foram preenchidos corretamentes.'
+            )
             return self.render
 
         username = self.userform.cleaned_data.get('username')
@@ -122,7 +127,7 @@ class Create(BasePerfil):
             'Você fez login e pode concluir sua compra!'
         )
 
-        return redirect('profile:create')
+        return redirect('profile:car')
 
 
 class Update(BasePerfil):
