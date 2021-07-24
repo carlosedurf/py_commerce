@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from .forms import UserForm, ProfileForm
 from .models import Profile
 from django.contrib.auth.models import User
-
+from django.contrib.auth import authenticate, login
 import copy
 
 
@@ -30,7 +30,8 @@ class BasePerfil(View):
                     instance=self.request.user
                 ),
                 'profileform': ProfileForm(
-                    data=self.request.POST or None
+                    data=self.request.POST or None,
+                    instance=self.profile
                 )
             }
         else:
@@ -45,6 +46,9 @@ class BasePerfil(View):
 
         self.userform = self.context['userform']
         self.profileform = self.context['profileform']
+
+        if self.request.user.is_authenticated:
+            self.template_name = 'shape/update.html'
 
         self.render = render(self.request, self.template_name, self.context)
 
@@ -76,6 +80,15 @@ class Create(BasePerfil):
             user.last_name = last_name
             user.save()
 
+            if not self.profile:
+                self.profileform.cleaned_data['user'] = user
+                profile = Profile(**self.profileform.cleaned_data)
+                profile.save()
+            else:
+                profile = self.profileform.save(commit=False)
+                profile.user = user
+                profile.save()
+
         # usuário não logado (novo)
         else:
             user = self.userform.save(commit=False)
@@ -85,6 +98,15 @@ class Create(BasePerfil):
             profile = self.profileform.save(commit=False)
             profile.user = user
             profile.save()
+
+        if password:
+            auth_user = authenticate(
+                username=user,
+                password=password
+            )
+
+            if auth_user:
+                login(self.request, user=user)
 
         self.request.session['car'] = self.car
         self.request.session.save()
