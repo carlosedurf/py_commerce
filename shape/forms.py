@@ -79,7 +79,7 @@ class UserForm(forms.ModelForm):
 
         # usuários não logados: cadastro
         else:
-            validation_error_messages['username'] = 'Blá'
+            pass
 
         if validation_error_messages:
             raise(forms.ValidationError(validation_error_messages))
