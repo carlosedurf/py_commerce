@@ -6,8 +6,7 @@ from django.http import HttpResponse, request
 from django.contrib import messages
 from django.urls import reverse
 from .models import Product, Variation
-
-from pprint import pprint
+from shape.models import Profile
 
 
 class ListProduct(ListView):
@@ -26,10 +25,6 @@ class ProductDetails(DetailView):
 
 class AddCar(View):
     def get(self, *args, **kwargs):
-        # TODO: Remover delete session
-        # if self.request.session.get('car'):
-        #     del self.request.session['car']
-        #     self.request.session.save()
 
         http_referer = self.request.META.get(
             'HTTP_REFERER'
@@ -145,7 +140,6 @@ class Car(View):
         context = {
             'car': self.request.session.get('car', {})
         }
-        pprint(context)
         return render(self.request, 'product/car.html', context)
 
 
@@ -153,6 +147,22 @@ class ResumeShop(View):
     def get(self, *args, **kwargs):
         if not self.request.user.is_authenticated:
             return redirect('profile:create')
+
+        profile = Profile.objects.filter(user=self.request.user).exists()
+
+        if not profile:
+            messages.error(
+                self.request,
+                'Usuário sem perfil'
+            )
+            return redirect('profile:create')
+
+        if not self.request.session['car']:
+            messages.error(
+                self.request,
+                'Seu carrinho esta vázio'
+            )
+            return redirect('product:list')
 
         context = {
             'user': self.request.user,
