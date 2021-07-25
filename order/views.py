@@ -1,14 +1,36 @@
 from django.shortcuts import render, redirect
 from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
 from django.views import View
 from django.http import HttpResponse
 from django.contrib import messages
 from product.models import Variation
 from utils import utils
 from .models import Order, OrderItem
+from django.urls import reverse
 
 
-class Buy(View):
+class DispatchLoginRequire(View):
+    def dispatch(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect('profile:create')
+
+        return super().dispatch(*args, **kwargs)
+
+
+class Buy(DispatchLoginRequire, DetailView):
+    template_name = 'order/buy.html'
+    model = Order
+    pk_url_kwarg = 'pk'
+    context_object_name = 'order'
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args, **kwargs)
+        qs = qs.filter(user=self.request.user)
+        return qs
+
+
+class SaveOrder(View):
     template_name = 'order/buy.html'
 
     def get(self, *args, **kwargs):
@@ -92,13 +114,15 @@ class Buy(View):
         )
 
         del self.request.session['car']
-        
-        return redirect('order:list')
 
-
-class SaveOrder(View):
-    def get(self, *args, **kwargs):
-        return HttpResponse('Fechar Pedido')
+        return redirect(
+            reverse(
+                'order:buy',
+                kwargs={
+                    'pk': order.pk
+                }
+            )
+        )
 
 
 class List(View):
