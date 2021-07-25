@@ -9,41 +9,42 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav ml-auto">
             {% if request.user.is_authenticated %}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false">
-                        Conta
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="{% url 'profile:create' %}">Atualizar</a>
-                        <a class="dropdown-item" href="{% url 'profile:logout' %}">Sair</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
-                </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                    Conta
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="{% url 'order:list' %}">Meus Pedidos</a>
+                    <a class="dropdown-item" href="{% url 'profile:create' %}">Atualizar dados</a>
+                    <a class="dropdown-item" href="{% url 'profile:logout' %}">Sair</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Something else here</a>
+                </div>
+            </li>
             {% else %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'profile:create' %}">Entrar</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'profile:create' %}">Criar Conta</a>
-                </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'profile:create' %}">Entrar</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'profile:create' %}">Criar Conta</a>
+            </li>
             {% endif %}
 
             {% if request.session.car %}
-                <li class="nav-item">
-                    <a class="nav-link nav-cart-link active" href="{% url 'product:car' %}">
-                        <span class="nav-cart-text mr-1">
-                            Carrinho
-                        </span>
-                        <span class="nav-cart-count mr-1">
-                            <strong>{{ request.session.car|cart_total_qtd }}x</strong>
-                        </span>
-                        <span class="nav-cart-icon mr-2">
-                            <i class="fas fa-shopping-cart"></i>
-                        </span>
-                    </a>
-                </li>
+            <li class="nav-item">
+                <a class="nav-link nav-cart-link active" href="{% url 'product:car' %}">
+                    <span class="nav-cart-text mr-1">
+                        Carrinho
+                    </span>
+                    <span class="nav-cart-count mr-1">
+                        <strong>{{ request.session.car|cart_total_qtd }}x</strong>
+                    </span>
+                    <span class="nav-cart-icon mr-2">
+                        <i class="fas fa-shopping-cart"></i>
+                    </span>
+                </a>
+            </li>
             {% endif %}
 
         </ul>

@@ -10,24 +10,24 @@ from .models import Order, OrderItem
 from django.urls import reverse
 
 
-class DispatchLoginRequire(View):
+class DispatchLoginRequireMixin(View):
     def dispatch(self, *args, **kwargs):
         if not self.request.user.is_authenticated:
             return redirect('profile:create')
 
         return super().dispatch(*args, **kwargs)
 
-
-class Buy(DispatchLoginRequire, DetailView):
-    template_name = 'order/buy.html'
-    model = Order
-    pk_url_kwarg = 'pk'
-    context_object_name = 'order'
-
     def get_queryset(self, *args, **kwargs):
         qs = super().get_queryset(*args, **kwargs)
         qs = qs.filter(user=self.request.user)
         return qs
+
+
+class Buy(DispatchLoginRequireMixin, DetailView):
+    template_name = 'order/buy.html'
+    model = Order
+    pk_url_kwarg = 'pk'
+    context_object_name = 'order'
 
 
 class SaveOrder(View):
@@ -125,11 +125,16 @@ class SaveOrder(View):
         )
 
 
-class List(View):
-    def get(self, *args, **kwargs):
-        return HttpResponse('Lista')
+class Details(DispatchLoginRequireMixin, DetailView):
+    model = Order
+    context_object_name = 'order'
+    template_name = 'order/details.html'
+    pk_url_kwarg = 'pk'
 
 
-class Details(View):
-    def get(self, *args, **kwargs):
-        return HttpResponse('Detalhes')
+class List(DispatchLoginRequireMixin, ListView):
+    model = Order
+    context_object_name = 'orders'
+    template_name = 'order/list.html'
+    paginate_by = 10
+    ordering = ['-id']
