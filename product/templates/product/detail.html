@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load omfilters %}
 
-{% block 'title' %}Detalhes do Produto{% endblock 'title' %}
+{% block 'title' %}{{ product.name }} |{% endblock 'title' %}
 
 {% block 'content' %}
 <div class="row">
